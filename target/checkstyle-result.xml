@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="8.4">
+<file name="/Users/christophershaw/Desktop/CODE/Tenit/values-java-sdk-client/src/main/java/com/tenitx/values/java/sdk/client/ValuesWebsocketClient.java">
+</file>
+<file name="/Users/christophershaw/Desktop/CODE/Tenit/values-java-sdk-client/src/main/java/com/tenitx/values/java/sdk/client/InternalValuesManager.java">
+</file>
+<file name="/Users/christophershaw/Desktop/CODE/Tenit/values-java-sdk-client/src/main/java/com/tenitx/values/java/sdk/client/Values.java">
+</file>
+<file name="/Users/christophershaw/Desktop/CODE/Tenit/values-java-sdk-client/src/main/java/com/tenitx/values/java/sdk/client/ValuesWriteClient.java">
+</file>
+<file name="/Users/christophershaw/Desktop/CODE/Tenit/values-java-sdk-client/src/main/java/com/tenitx/values/java/sdk/client/ValuesClientConfigIF.java">
+</file>
+<file name="/Users/christophershaw/Desktop/CODE/Tenit/values-java-sdk-client/src/main/java/com/tenitx/values/java/sdk/client/utils/TenitObjectMapper.java">
+</file>
+<file name="/Users/christophershaw/Desktop/CODE/Tenit/values-java-sdk-client/src/main/java/com/tenitx/values/java/sdk/client/utils/NapRoom.java">
+</file>
+<file name="/Users/christophershaw/Desktop/CODE/Tenit/values-java-sdk-client/src/main/java/com/tenitx/values/java/sdk/client/models/ValuesResponseIF.java">
+</file>
+<file name="/Users/christophershaw/Desktop/CODE/Tenit/values-java-sdk-client/src/main/java/com/tenitx/values/java/sdk/client/models/AllValuesResponseIF.java">
+</file>
+<file name="/Users/christophershaw/Desktop/CODE/Tenit/values-java-sdk-client/src/main/java/com/tenitx/values/java/sdk/client/models/ValueType.java">
+</file>
+<file name="/Users/christophershaw/Desktop/CODE/Tenit/values-java-sdk-client/src/main/java/com/tenitx/values/java/sdk/client/TenitStyle.java">
+</file>
+<file name="/Users/christophershaw/Desktop/CODE/Tenit/values-java-sdk-client/src/main/java/com/tenitx/values/java/sdk/client/ValueIF.java">
+</file>
+<file name="/Users/christophershaw/Desktop/CODE/Tenit/values-java-sdk-client/src/main/java/com/tenitx/values/java/sdk/client/WebsocketActionIF.java">
+</file>
+<file name="/Users/christophershaw/Desktop/CODE/Tenit/values-java-sdk-client/src/main/java/com/tenitx/values/java/sdk/client/ValuesHttpClient.java">
+</file>
+<file name="/Users/christophershaw/Desktop/CODE/Tenit/values-java-sdk-client/target/generated-sources/annotations/com/tenitx/values/java/sdk/client/models/ValuesResponse.java">
+</file>
+<file name="/Users/christophershaw/Desktop/CODE/Tenit/values-java-sdk-client/target/generated-sources/annotations/com/tenitx/values/java/sdk/client/models/AllValuesResponse.java">
+</file>
+<file name="/Users/christophershaw/Desktop/CODE/Tenit/values-java-sdk-client/target/generated-sources/annotations/com/tenitx/values/java/sdk/client/Placeholder.java">
+</file>
+<file name="/Users/christophershaw/Desktop/CODE/Tenit/values-java-sdk-client/target/generated-sources/annotations/com/tenitx/values/java/sdk/client/ValuesClientConfig.java">
+</file>
+<file name="/Users/christophershaw/Desktop/CODE/Tenit/values-java-sdk-client/target/generated-sources/annotations/com/tenitx/values/java/sdk/client/Value.java">
+</file>
+<file name="/Users/christophershaw/Desktop/CODE/Tenit/values-java-sdk-client/target/generated-sources/annotations/com/tenitx/values/java/sdk/client/WebsocketAction.java">
+</file>
+</checkstyle>

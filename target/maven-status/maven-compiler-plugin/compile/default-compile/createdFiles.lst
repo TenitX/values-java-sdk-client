@@ -1,0 +1,5 @@
+com/tenitx/values/java/sdk/client/models/ValueType.class
+com/tenitx/values/java/sdk/client/ValuesWriteClient.class
+com/tenitx/values/java/sdk/client/utils/TenitObjectMapper.class
+com/tenitx/values/java/sdk/client/ValuesWriteClient$1.class
+com/tenitx/values/java/sdk/client/ValuesHttpClient$1.class
