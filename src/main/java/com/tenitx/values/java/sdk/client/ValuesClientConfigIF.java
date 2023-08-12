@@ -17,6 +17,11 @@ public interface ValuesClientConfigIF {
   }
 
   @Value.Default
+  default Duration getRefreshTime() {
+    return Duration.ofMinutes(1L);
+  }
+
+  @Value.Default
   default Boolean getUseVerboseLogging() {
     return false;
   }

@@ -1,11 +1,6 @@
 package com.tenitx.values.java.sdk.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.tenitx.values.java.sdk.client.models.AllValuesResponse;
 import com.tenitx.values.java.sdk.client.models.ValuesResponse;
 import com.tenitx.values.java.sdk.client.utils.TenitObjectMapper;
 import java.io.IOException;
@@ -50,6 +45,8 @@ public class ValuesHttpClient {
 
   public void connect() {
     forceInitialSyncForCoordinates();
+    getUpdatedValuesMap()
+      .ifPresent(r -> internalValuesManager.addValues(r.getValuesMap()));
     final Runnable runner = new Runnable() {
 
       public void run() {
@@ -62,9 +59,7 @@ public class ValuesHttpClient {
               LOG.info("Found updated values...");
             }
             getUpdatedValuesMap()
-              .ifPresent(
-                r -> internalValuesManager.addValues(r.getValuesMap().getValuesMap())
-              );
+              .ifPresent(r -> internalValuesManager.addValues(r.getValuesMap()));
           }
         } catch (Exception e) {
           // We don't care about the exception ATM, we just want to help keep the thread alive
@@ -74,8 +69,8 @@ public class ValuesHttpClient {
     final ScheduledFuture<?> runnerHandle = scheduler.scheduleAtFixedRate(
       runner,
       0,
-      1,
-      TimeUnit.MINUTES
+      config.getRefreshTime().toSeconds(),
+      TimeUnit.SECONDS
     );
   }
 
@@ -135,7 +130,7 @@ public class ValuesHttpClient {
     }
   }
 
-  private Optional<AllValuesResponse> getUpdatedValuesMap() {
+  private Optional<ValuesResponse> getUpdatedValuesMap() {
     Request request = new Request.Builder()
       .url(API_URL)
       .addHeader("x-tenit-api-token", config.getApiToken())
@@ -143,7 +138,7 @@ public class ValuesHttpClient {
 
     try (Response response = httpClient.newCall(request).execute()) {
       String r = new String(response.body().bytes());
-      return Optional.ofNullable(objectMapper.readValue(r, AllValuesResponse.class));
+      return Optional.ofNullable(objectMapper.readValue(r, ValuesResponse.class));
     } catch (IOException e) {
       return Optional.empty();
     }

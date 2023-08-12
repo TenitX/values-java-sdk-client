@@ -29,6 +29,7 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
   private final String apiToken;
   private final String coordinate;
   private final Duration cacheTime;
+  private final Duration refreshTime;
   private final Boolean useVerboseLogging;
   private final Boolean useWebsocket;
 
@@ -37,12 +38,14 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
       String apiToken,
       String coordinate,
       Duration cacheTime,
+      Duration refreshTime,
       Boolean useVerboseLogging,
       Boolean useWebsocket) {
     this.accountId = accountId;
     this.apiToken = Objects.requireNonNull(apiToken, "apiToken");
     this.coordinate = Objects.requireNonNull(coordinate, "coordinate");
     this.cacheTime = Objects.requireNonNull(cacheTime, "cacheTime");
+    this.refreshTime = Objects.requireNonNull(refreshTime, "refreshTime");
     this.useVerboseLogging = Objects.requireNonNull(useVerboseLogging, "useVerboseLogging");
     this.useWebsocket = Objects.requireNonNull(useWebsocket, "useWebsocket");
     this.initShim = null;
@@ -55,6 +58,9 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
     if (builder.cacheTimeIsSet()) {
       initShim.withCacheTime(builder.cacheTime);
     }
+    if (builder.refreshTimeIsSet()) {
+      initShim.withRefreshTime(builder.refreshTime);
+    }
     if (builder.useVerboseLoggingIsSet()) {
       initShim.withUseVerboseLogging(builder.useVerboseLogging);
     }
@@ -62,6 +68,7 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
       initShim.withUseWebsocket(builder.useWebsocket);
     }
     this.cacheTime = initShim.getCacheTime();
+    this.refreshTime = initShim.getRefreshTime();
     this.useVerboseLogging = initShim.getUseVerboseLogging();
     this.useWebsocket = initShim.getUseWebsocket();
     this.initShim = null;
@@ -73,12 +80,14 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
       String apiToken,
       String coordinate,
       Duration cacheTime,
+      Duration refreshTime,
       Boolean useVerboseLogging,
       Boolean useWebsocket) {
     this.accountId = accountId;
     this.apiToken = apiToken;
     this.coordinate = coordinate;
     this.cacheTime = cacheTime;
+    this.refreshTime = refreshTime;
     this.useVerboseLogging = useVerboseLogging;
     this.useWebsocket = useWebsocket;
     this.initShim = null;
@@ -108,6 +117,24 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
     void withCacheTime(Duration cacheTime) {
       this.cacheTime = cacheTime;
       cacheTimeBuildStage = STAGE_INITIALIZED;
+    }
+
+    private byte refreshTimeBuildStage = STAGE_UNINITIALIZED;
+    private Duration refreshTime;
+
+    Duration getRefreshTime() {
+      if (refreshTimeBuildStage == STAGE_INITIALIZING) throw new IllegalStateException(formatInitCycleMessage());
+      if (refreshTimeBuildStage == STAGE_UNINITIALIZED) {
+        refreshTimeBuildStage = STAGE_INITIALIZING;
+        this.refreshTime = Objects.requireNonNull(getRefreshTimeInitialize(), "refreshTime");
+        refreshTimeBuildStage = STAGE_INITIALIZED;
+      }
+      return this.refreshTime;
+    }
+
+    void withRefreshTime(Duration refreshTime) {
+      this.refreshTime = refreshTime;
+      refreshTimeBuildStage = STAGE_INITIALIZED;
     }
 
     private byte useVerboseLoggingBuildStage = STAGE_UNINITIALIZED;
@@ -149,6 +176,7 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
     private String formatInitCycleMessage() {
       List<String> attributes = new ArrayList<>();
       if (cacheTimeBuildStage == STAGE_INITIALIZING) attributes.add("cacheTime");
+      if (refreshTimeBuildStage == STAGE_INITIALIZING) attributes.add("refreshTime");
       if (useVerboseLoggingBuildStage == STAGE_INITIALIZING) attributes.add("useVerboseLogging");
       if (useWebsocketBuildStage == STAGE_INITIALIZING) attributes.add("useWebsocket");
       return "Cannot build ValuesClientConfig, attribute initializers form cycle " + attributes;
@@ -157,6 +185,10 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
 
   private Duration getCacheTimeInitialize() {
     return ValuesClientConfigIF.super.getCacheTime();
+  }
+
+  private Duration getRefreshTimeInitialize() {
+    return ValuesClientConfigIF.super.getRefreshTime();
   }
 
   private Boolean getUseVerboseLoggingInitialize() {
@@ -207,6 +239,18 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
   }
 
   /**
+   * @return The value of the {@code refreshTime} attribute
+   */
+  @JsonProperty("refreshTime")
+  @Override
+  public Duration getRefreshTime() {
+    InitShim shim = this.initShim;
+    return shim != null
+        ? shim.getRefreshTime()
+        : this.refreshTime;
+  }
+
+  /**
    * @return The value of the {@code useVerboseLogging} attribute
    */
   @JsonProperty("useVerboseLogging")
@@ -244,6 +288,7 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
         this.apiToken,
         this.coordinate,
         this.cacheTime,
+        this.refreshTime,
         this.useVerboseLogging,
         this.useWebsocket);
   }
@@ -263,6 +308,7 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
         newValue,
         this.coordinate,
         this.cacheTime,
+        this.refreshTime,
         this.useVerboseLogging,
         this.useWebsocket);
   }
@@ -282,6 +328,7 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
         this.apiToken,
         newValue,
         this.cacheTime,
+        this.refreshTime,
         this.useVerboseLogging,
         this.useWebsocket);
   }
@@ -300,6 +347,27 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
         this.accountId,
         this.apiToken,
         this.coordinate,
+        newValue,
+        this.refreshTime,
+        this.useVerboseLogging,
+        this.useWebsocket);
+  }
+
+  /**
+   * Copy the current immutable object by setting a value for the {@link ValuesClientConfigIF#getRefreshTime() refreshTime} attribute.
+   * A shallow reference equality check is used to prevent copying of the same value by returning {@code this}.
+   * @param value A new value for refreshTime
+   * @return A modified copy of the {@code this} object
+   */
+  public final ValuesClientConfig withRefreshTime(Duration value) {
+    if (this.refreshTime == value) return this;
+    Duration newValue = Objects.requireNonNull(value, "refreshTime");
+    return new ValuesClientConfig(
+        this,
+        this.accountId,
+        this.apiToken,
+        this.coordinate,
+        this.cacheTime,
         newValue,
         this.useVerboseLogging,
         this.useWebsocket);
@@ -320,6 +388,7 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
         this.apiToken,
         this.coordinate,
         this.cacheTime,
+        this.refreshTime,
         newValue,
         this.useWebsocket);
   }
@@ -339,6 +408,7 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
         this.apiToken,
         this.coordinate,
         this.cacheTime,
+        this.refreshTime,
         this.useVerboseLogging,
         newValue);
   }
@@ -359,12 +429,13 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
         && apiToken.equals(another.apiToken)
         && coordinate.equals(another.coordinate)
         && cacheTime.equals(another.cacheTime)
+        && refreshTime.equals(another.refreshTime)
         && useVerboseLogging.equals(another.useVerboseLogging)
         && useWebsocket.equals(another.useWebsocket);
   }
 
   /**
-   * Computes a hash code from attributes: {@code accountId}, {@code apiToken}, {@code coordinate}, {@code cacheTime}, {@code useVerboseLogging}, {@code useWebsocket}.
+   * Computes a hash code from attributes: {@code accountId}, {@code apiToken}, {@code coordinate}, {@code cacheTime}, {@code refreshTime}, {@code useVerboseLogging}, {@code useWebsocket}.
    * @return hashCode value
    */
   @Override
@@ -374,6 +445,7 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
     h += (h << 5) + apiToken.hashCode();
     h += (h << 5) + coordinate.hashCode();
     h += (h << 5) + cacheTime.hashCode();
+    h += (h << 5) + refreshTime.hashCode();
     h += (h << 5) + useVerboseLogging.hashCode();
     h += (h << 5) + useWebsocket.hashCode();
     return h;
@@ -391,6 +463,7 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
         .add("apiToken", apiToken)
         .add("coordinate", coordinate)
         .add("cacheTime", cacheTime)
+        .add("refreshTime", refreshTime)
         .add("useVerboseLogging", useVerboseLogging)
         .add("useWebsocket", useWebsocket)
         .toString();
@@ -412,6 +485,8 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
     String coordinate;
     Duration cacheTime;
     boolean cacheTimeIsSet;
+    Duration refreshTime;
+    boolean refreshTimeIsSet;
     Boolean useVerboseLogging;
     boolean useVerboseLoggingIsSet;
     Boolean useWebsocket;
@@ -434,6 +509,11 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
       this.cacheTime = cacheTime;
       this.cacheTimeIsSet = true;
     }
+    @JsonProperty("refreshTime")
+    public void setRefreshTime(Duration refreshTime) {
+      this.refreshTime = refreshTime;
+      this.refreshTimeIsSet = true;
+    }
     @JsonProperty("useVerboseLogging")
     public void setUseVerboseLogging(Boolean useVerboseLogging) {
       this.useVerboseLogging = useVerboseLogging;
@@ -452,6 +532,8 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
     public String getCoordinate() { throw new UnsupportedOperationException(); }
     @Override
     public Duration getCacheTime() { throw new UnsupportedOperationException(); }
+    @Override
+    public Duration getRefreshTime() { throw new UnsupportedOperationException(); }
     @Override
     public Boolean getUseVerboseLogging() { throw new UnsupportedOperationException(); }
     @Override
@@ -479,6 +561,9 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
     if (json.cacheTimeIsSet) {
       builder.withCacheTime(json.cacheTime);
     }
+    if (json.refreshTimeIsSet) {
+      builder.withRefreshTime(json.refreshTime);
+    }
     if (json.useVerboseLoggingIsSet) {
       builder.withUseVerboseLogging(json.useVerboseLogging);
     }
@@ -494,12 +579,13 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
    * @param apiToken The value for the {@code apiToken} attribute
    * @param coordinate The value for the {@code coordinate} attribute
    * @param cacheTime The value for the {@code cacheTime} attribute
+   * @param refreshTime The value for the {@code refreshTime} attribute
    * @param useVerboseLogging The value for the {@code useVerboseLogging} attribute
    * @param useWebsocket The value for the {@code useWebsocket} attribute
    * @return An immutable ValuesClientConfig instance
    */
-  public static ValuesClientConfig of(int accountId, String apiToken, String coordinate, Duration cacheTime, Boolean useVerboseLogging, Boolean useWebsocket) {
-    return new ValuesClientConfig(accountId, apiToken, coordinate, cacheTime, useVerboseLogging, useWebsocket);
+  public static ValuesClientConfig of(int accountId, String apiToken, String coordinate, Duration cacheTime, Duration refreshTime, Boolean useVerboseLogging, Boolean useWebsocket) {
+    return new ValuesClientConfig(accountId, apiToken, coordinate, cacheTime, refreshTime, useVerboseLogging, useWebsocket);
   }
 
   /**
@@ -518,6 +604,7 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
         .withApiToken(instance.getApiToken())
         .withCoordinate(instance.getCoordinate())
         .withCacheTime(instance.getCacheTime())
+        .withRefreshTime(instance.getRefreshTime())
         .withUseVerboseLogging(instance.getUseVerboseLogging())
         .withUseWebsocket(instance.getUseWebsocket())
         .build();
@@ -531,6 +618,7 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
    *    .withApiToken(String) // required {@link ValuesClientConfigIF#getApiToken() apiToken}
    *    .withCoordinate(String) // required {@link ValuesClientConfigIF#getCoordinate() coordinate}
    *    .withCacheTime(java.time.Duration) // optional {@link ValuesClientConfigIF#getCacheTime() cacheTime}
+   *    .withRefreshTime(java.time.Duration) // optional {@link ValuesClientConfigIF#getRefreshTime() refreshTime}
    *    .withUseVerboseLogging(Boolean) // optional {@link ValuesClientConfigIF#getUseVerboseLogging() useVerboseLogging}
    *    .withUseWebsocket(Boolean) // optional {@link ValuesClientConfigIF#getUseWebsocket() useWebsocket}
    *    .build();
@@ -554,8 +642,9 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
     private static final long INIT_BIT_API_TOKEN = 0x2L;
     private static final long INIT_BIT_COORDINATE = 0x4L;
     private static final long OPT_BIT_CACHE_TIME = 0x1L;
-    private static final long OPT_BIT_USE_VERBOSE_LOGGING = 0x2L;
-    private static final long OPT_BIT_USE_WEBSOCKET = 0x4L;
+    private static final long OPT_BIT_REFRESH_TIME = 0x2L;
+    private static final long OPT_BIT_USE_VERBOSE_LOGGING = 0x4L;
+    private static final long OPT_BIT_USE_WEBSOCKET = 0x8L;
     private long initBits = 0x7L;
     private long optBits;
 
@@ -563,6 +652,7 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
     private String apiToken;
     private String coordinate;
     private Duration cacheTime;
+    private Duration refreshTime;
     private Boolean useVerboseLogging;
     private Boolean useWebsocket;
 
@@ -627,6 +717,21 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
     }
 
     /**
+     * Initializes the value for the {@link ValuesClientConfigIF#getRefreshTime() refreshTime} attribute.
+     * <p><em>If not set, this attribute will have a default value as returned by the initializer of {@link ValuesClientConfigIF#getRefreshTime() refreshTime}.</em>
+     * @param refreshTime The value for refreshTime 
+     * @return {@code this} builder for use in a chained invocation
+     */
+    @CanIgnoreReturnValue 
+    @JsonProperty("refreshTime")
+    public final Builder withRefreshTime(Duration refreshTime) {
+      checkNotIsSet(refreshTimeIsSet(), "refreshTime");
+      this.refreshTime = Objects.requireNonNull(refreshTime, "refreshTime");
+      optBits |= OPT_BIT_REFRESH_TIME;
+      return this;
+    }
+
+    /**
      * Initializes the value for the {@link ValuesClientConfigIF#getUseVerboseLogging() useVerboseLogging} attribute.
      * <p><em>If not set, this attribute will have a default value as returned by the initializer of {@link ValuesClientConfigIF#getUseVerboseLogging() useVerboseLogging}.</em>
      * @param useVerboseLogging The value for useVerboseLogging 
@@ -668,6 +773,10 @@ public final class ValuesClientConfig implements ValuesClientConfigIF {
 
     private boolean cacheTimeIsSet() {
       return (optBits & OPT_BIT_CACHE_TIME) != 0;
+    }
+
+    private boolean refreshTimeIsSet() {
+      return (optBits & OPT_BIT_REFRESH_TIME) != 0;
     }
 
     private boolean useVerboseLoggingIsSet() {
